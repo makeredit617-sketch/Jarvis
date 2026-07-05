@@ -1,0 +1,41 @@
+[
+  {
+    "request": "Build a secure file system analyzer",
+    "plan": {
+      "steps": [
+        {
+          "id": 1,
+          "task": "Scan file system structure",
+          "agent": "Engineer",
+          "risk": "Low"
+        },
+        {
+          "id": 2,
+          "task": "Analyze permission boundaries",
+          "agent": "Security",
+          "risk": "High"
+        },
+        {
+          "id": 3,
+          "task": "Generate report",
+          "agent": "Engineer",
+          "risk": "Low"
+        }
+      ]
+    },
+    "executionResults": [
+      {
+        "id": 1,
+        "task": "Scan file system structure",
+        "status": "EXECUTED"
+      },
+      {
+        "id": 3,
+        "task": "Generate report",
+        "status": "EXECUTED"
+      }
+    ],
+    "qaPass": true,
+    "timestamp": "2026-07-04T23:40:20.274Z"
+  }
+]

@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-07-04T22:23:36.270Z",
+  "timestamp": "2026-07-04T23:32:36.256Z",
   "projectRoot": "/home/kanishk/Jarvis",
   "structure": {
     "hasPackageJson": false,
     "hasTsConfig": false,
-    "hasClaudeConfig": true,
+    "hasClaudeConfig": false,
     "hasClaudeFlow": true
   },
-  "scannedAt": 1783203816270
+  "scannedAt": 1783207956257
 }
