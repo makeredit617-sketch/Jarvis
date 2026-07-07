@@ -37,5 +37,14 @@
     ],
     "qaPass": true,
     "timestamp": "2026-07-04T23:40:20.274Z"
+  },
+  {
+    "type": "episodic.placeholder",
+    "timestamp": "2026-07-05T10:16:16.650Z",
+    "content": {
+      "request": "No request provided",
+      "planId": "plan.placeholder",
+      "status": "PASS"
+    }
   }
 ]
