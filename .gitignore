@@ -37,3 +37,6 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+
+# JARVIS runtime
+runtime/memory.log.json
