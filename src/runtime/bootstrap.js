@@ -7,6 +7,7 @@ const { createToolRegistry } = require("../tools/tool-registry");
 const { createEventBus } = require("../events/event-bus");
 const { createRuntime } = require("./runtime");
 const { createServiceRegistry } = require("./service-registry");
+const { NvidiaClient } = require("../ai/client/nvidia.client");
 
 function bootJarvisRuntime(options = {}) {
   const architectureDocs = loadArchitectureDocs();
@@ -14,6 +15,7 @@ function bootJarvisRuntime(options = {}) {
   const eventBus = createEventBus(options.events);
   const memoryStore = createMemoryStore(options.memory);
   const serviceRegistry = createServiceRegistry();
+  serviceRegistry.register("ai", new NvidiaClient());
   const toolRegistry = createToolRegistry(options.tools);
   const agents = createAgentRegistry({ architectureDocs });
   const orchestrator = createOrchestrator({

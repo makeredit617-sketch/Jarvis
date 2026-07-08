@@ -2,7 +2,8 @@ function createPlannerAgent() {
   return {
     name: "planner",
 
-    register({ eventBus }) {
+    register({ eventBus, serviceRegistry }) {
+      this.ai = serviceRegistry.get("ai");
       return [
         eventBus.subscribe("RuntimeRequestReceived", async event => {
           const plan = await this.createPlan(event.payload.input);
@@ -16,14 +17,37 @@ function createPlannerAgent() {
     },
 
     async createPlan(input) {
-      // TODO: Replace this placeholder with Planner Agent reasoning.
-      return {
-        id: "plan.placeholder",
-        request: input.request,
-        steps: [],
-        dependencies: [],
-        riskLevel: "UNKNOWN"
-      };
+      const prompt = `You are the JARVIS Planner Agent.
+
+Return ONLY valid JSON.
+
+The JSON must have exactly these fields:
+{
+  "id": "plan-001",
+  "request": "...",
+  "steps": ["..."],
+  "dependencies": [],
+  "riskLevel": "LOW"
+}
+
+User Request:
+${input.request}`;
+
+      const reply = await this.ai.generate(prompt);
+
+      try {
+        return JSON.parse(reply);
+      } catch (error) {
+        return {
+          id: "plan.fallback",
+          request: input.request,
+          steps: [
+            "Planner returned invalid JSON"
+          ],
+          dependencies: [],
+          riskLevel: "UNKNOWN"
+        };
+      }
     }
   };
 }

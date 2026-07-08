@@ -46,5 +46,14 @@
       "planId": "plan.placeholder",
       "status": "PASS"
     }
+  },
+  {
+    "type": "episodic.placeholder",
+    "timestamp": "2026-07-08T06:29:25.486Z",
+    "content": {
+      "request": "Create a Python calculator",
+      "planId": "plan-001",
+      "status": "PASS"
+    }
   }
 ]
