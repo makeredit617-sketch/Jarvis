@@ -55,5 +55,41 @@
       "planId": "plan-001",
       "status": "PASS"
     }
+  },
+  {
+    "type": "episodic.placeholder",
+    "timestamp": "2026-07-09T06:56:02.653Z",
+    "content": {
+      "request": "Create a Python calculator",
+      "planId": "plan-001",
+      "status": "PASS"
+    }
+  },
+  {
+    "type": "episodic.placeholder",
+    "timestamp": "2026-07-09T07:01:12.218Z",
+    "content": {
+      "request": "Create a Python calculator",
+      "planId": "plan-001",
+      "status": "PASS"
+    }
+  },
+  {
+    "type": "episodic.placeholder",
+    "timestamp": "2026-07-09T07:16:58.959Z",
+    "content": {
+      "request": "Create a Python calculator",
+      "planId": "plan-001",
+      "status": "PASS"
+    }
+  },
+  {
+    "type": "episodic.placeholder",
+    "timestamp": "2026-07-09T07:23:38.943Z",
+    "content": {
+      "request": "Create a Python calculator",
+      "planId": "plan-001",
+      "status": "PASS"
+    }
   }
 ]

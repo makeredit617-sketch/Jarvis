@@ -28,8 +28,11 @@ class NvidiaClient {
                         content: prompt
                     }
                 ],
+                response_format: {
+                    type: "json_object"
+                },
                 temperature: 0.7,
-                max_tokens: 512
+                max_tokens: 2048
             })
         });
 
