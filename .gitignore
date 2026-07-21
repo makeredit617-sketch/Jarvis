@@ -40,3 +40,13 @@ Thumbs.db
 
 # JARVIS runtime
 runtime/memory.log.json
+
+# Backup files
+*.bak
+
+# Credentials and keys
+*.key
+*.pem
+secrets/
+credentials/
+config/secrets*
