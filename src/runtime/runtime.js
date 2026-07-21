@@ -46,6 +46,8 @@ function createRuntime(options) {
         toolRegistry
       });
 
+      serviceRegistry.register("runtime", this);
+
       for (const module of modules) {
         serviceRegistry.register(module.name, module);
 

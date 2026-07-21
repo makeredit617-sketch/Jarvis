@@ -104,7 +104,9 @@ function normalizeEvent(event, clock) {
 
   return {
     ...event,
-    timestamp: event.timestamp || clock().toISOString()
+    timestamp: event.timestamp || clock().toISOString(),
+    payload: event.payload || {},
+    metadata: event.metadata || {}
   };
 }
 
