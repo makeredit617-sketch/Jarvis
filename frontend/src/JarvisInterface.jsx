@@ -16,34 +16,34 @@ import { Mic, Send, X, MessageSquare, Cpu, Wifi, HardDrive, Laptop, Smartphone, 
    ============================================================ */
 
 function createConnector(onEvent) {
-  // No runtime is attached yet. This connector does not invent devices,
-  // status, or canned answers — it only reflects connection state and
-  // reports that commands were received but cannot be fulfilled.
-  //
-  // To go live: replace the body of send() with real calls to your
-  // Jarvis runtime (WebSocket/IPC/HTTP), and forward whatever it emits
-  // as device.updated / status.updated / assistant.response events.
-  // The rest of the interface already knows how to render them —
-  // nothing above this layer needs to change.
+  const ws = new WebSocket("ws://localhost:8787");
 
-  onEvent({ type: "connection.state", connected: false });
+  ws.onclose = () => {
+    onEvent({ type: "connection.state", connected: false });
+  };
+
+  ws.onerror = () => {
+    onEvent({ type: "connection.state", connected: false });
+  };
+
+  ws.onmessage = (msg) => {
+    try {
+      const event = JSON.parse(msg.data);
+      onEvent(event);
+    } catch {
+      // ignore malformed messages
+    }
+  };
 
   return {
     send(event) {
-      if (event.type === "user.input") {
-        onEvent({ type: "activity.log", message: "Received command", detail: event.input });
-        onEvent({ type: "jarvis.state", state: "thinking" });
-        setTimeout(() => {
-          onEvent({
-            type: "assistant.response",
-            text: "No runtime is connected yet, so I can't act on that. Wire up the connector to reach a real Jarvis backend.",
-          });
-          onEvent({ type: "jarvis.state", state: "idle" });
-          onEvent({ type: "activity.log", message: "No runtime connected — command not executed" });
-        }, 500);
-      }
-      if (event.type === "voice.toggle") {
-        onEvent({ type: "jarvis.state", state: event.listening ? "listening" : "idle" });
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(event));
+      } else {
+        onEvent({
+          type: "activity.log",
+          message: "Not connected to runtime — command not sent"
+        });
       }
     },
   };

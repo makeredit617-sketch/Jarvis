@@ -5,7 +5,10 @@
   "main": "runtime/jarvis.runner.js",
   "scripts": {
     "start": "node runtime/jarvis.runner.js",
-    "test": "node --test"
+    "test": "node --test",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [
     "ai",
@@ -16,6 +19,14 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "lucide-react": "^1.25.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "ws": "^8.21.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.4",
+    "vite": "^8.1.5"
   }
 }
