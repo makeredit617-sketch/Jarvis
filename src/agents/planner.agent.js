@@ -21,10 +21,16 @@ function createPlannerAgent() {
 
 Return ONLY valid JSON.
 
+Decide the intent: "CONVERSATION" if the user just wants a reply
+(greetings, questions, chat), or "TASK" if the user wants something
+built, changed, or executed.
+
 The JSON must have exactly these fields:
 {
   "id": "plan-001",
   "request": "...",
+  "intent": "CONVERSATION or TASK",
+  "reply": "your direct conversational reply text if intent is CONVERSATION, otherwise empty string",
   "steps": ["..."],
   "dependencies": [],
   "riskLevel": "LOW"

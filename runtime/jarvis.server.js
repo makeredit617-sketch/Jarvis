@@ -18,6 +18,11 @@ function summarizeResult(result) {
   }
 
   const exec = result.executionResult || {};
+
+  if (exec.reply) {
+    return exec.reply;
+  }
+
   const parts = [];
 
   if (exec.errors && exec.errors.length > 0) {

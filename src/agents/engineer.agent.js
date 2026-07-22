@@ -21,6 +21,16 @@ function createEngineerAgent() {
     },
 
     async executePlan(plan) {
+      if (plan.intent === "CONVERSATION") {
+        return {
+          status: "SUCCESS",
+          planId: plan.id,
+          changes: [],
+          commands: [],
+          errors: [],
+          reply: plan.reply || ""
+        };
+      }
       const prompt = `You are the JARVIS Engineer Agent.
 
 Generate ONLY valid JSON.

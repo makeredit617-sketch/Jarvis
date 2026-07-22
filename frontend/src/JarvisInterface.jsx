@@ -222,7 +222,7 @@ export default function JarvisInterface() {
   const [jarvisState, setJarvisState] = useState("idle");
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([
-    { id: 0, from: "jarvis", text: "Interface ready. No runtime connected yet." },
+    { id: 0, from: "jarvis", text: "Interface ready." },
   ]);
   const [input, setInput] = useState("");
   const [devices, setDevices] = useState([]);
