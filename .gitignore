@@ -50,3 +50,6 @@ runtime/memory.log.json
 secrets/
 credentials/
 config/secrets*
+
+# JARVIS workspace (generated at runtime)
+workspace/

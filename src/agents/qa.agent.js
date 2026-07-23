@@ -4,7 +4,7 @@ function createQaAgent() {
 
     register({ eventBus }) {
       return [
-        eventBus.subscribe("EngineerExecutedPlan", async event => {
+        eventBus.subscribe("ExecutorCompletedExecution", async event => {
           const qaResult = await this.validate({
             plan: event.payload.plan,
             executionResult: event.payload.executionResult,

@@ -8,7 +8,8 @@ const paths = {
   coreDir: path.join(PROJECT_ROOT, "core"),
   docsDir: path.join(PROJECT_ROOT, "docs"),
   runtimeDir: path.join(PROJECT_ROOT, "runtime"),
-  memoryFile: path.join(PROJECT_ROOT, "runtime", "memory.log.json")
+  memoryFile: path.join(PROJECT_ROOT, "runtime", "memory.log.json"),
+  workspaceDir: path.join(PROJECT_ROOT, "workspace")
 };
 
 module.exports = {

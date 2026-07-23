@@ -25,15 +25,21 @@ function summarizeResult(result) {
 
   const parts = [];
 
-  if (exec.errors && exec.errors.length > 0) {
-    parts.push(`Errors: ${exec.errors.join("; ")}`);
-  }
   if (exec.changes && exec.changes.length > 0) {
-    const files = exec.changes.map((c) => c.file).join(", ");
-    parts.push(`Created/modified: ${files}`);
+    const succeeded = exec.changes.filter((c) => c.success).map((c) => c.file);
+    const failed = exec.changes.filter((c) => !c.success).map((c) => c.file);
+    if (succeeded.length > 0) {
+      parts.push(`Created/modified: ${succeeded.join(", ")}`);
+    }
+    if (failed.length > 0) {
+      parts.push(`Failed to write: ${failed.join(", ")}`);
+    }
   }
   if (exec.commands && exec.commands.length > 0) {
     parts.push(`Ran: ${exec.commands.join("; ")}`);
+  }
+  if (exec.errors && exec.errors.length > 0) {
+    parts.push(`Errors: ${exec.errors.join("; ")}`);
   }
   if (parts.length === 0) {
     parts.push(`Done (status: ${result.status})`);

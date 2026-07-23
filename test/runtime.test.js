@@ -57,6 +57,7 @@ test("runtime initialization registers services and module subscriptions", async
     "auditLog",
     "eventBus",
     "memoryStore",
+    "runtime",
     "testModule",
     "toolRegistry"
   ]);

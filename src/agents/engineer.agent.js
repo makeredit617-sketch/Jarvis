@@ -6,15 +6,13 @@ function createEngineerAgent() {
       this.ai = serviceRegistry.get("ai");
       return [
         eventBus.subscribe("SecurityApprovedPlan", async event => {
-          const executionResult = await this.executePlan(event.payload.plan, {
-            toolRegistry: serviceRegistry.get("toolRegistry")
-          });
-          event.context.setResult("executionResult", executionResult);
+          const executionIntent = await this.executePlan(event.payload.plan);
+          event.context.setResult("executionIntent", executionIntent);
 
-          await eventBus.publish(event.context.createEvent("EngineerExecutedPlan", this.name, {
+          await eventBus.publish(event.context.createEvent("EngineerProposedExecution", this.name, {
             plan: event.payload.plan,
             securityDecision: event.payload.securityDecision,
-            executionResult
+            executionIntent
           }));
         })
       ];

@@ -11,6 +11,8 @@ const { createEmergencyControl } = require("./emergency-control");
 const { NvidiaClient } = require("../ai/client/nvidia.client");
 const { createCapabilityManager } = require("../capabilities/capability-manager");
 const { createCapabilityRegistry } = require("../capabilities/capability-registry");
+const { createWriteFileTool } = require("../tools/adapters/write-file.tool");
+const { paths: appPaths } = require("../config/paths");
 
 function bootJarvisRuntime(options = {}) {
   const architectureDocs = loadArchitectureDocs();
@@ -23,6 +25,7 @@ function bootJarvisRuntime(options = {}) {
   serviceRegistry.register("emergencyControl", emergencyControl);
   serviceRegistry.register("ai", new NvidiaClient());
   const toolRegistry = createToolRegistry(options.tools);
+  toolRegistry.register("writeFile", createWriteFileTool({ workspaceDir: appPaths.workspaceDir }));
 
   const capabilityRegistry = createCapabilityRegistry();
   serviceRegistry.register("capabilityRegistry", capabilityRegistry);
