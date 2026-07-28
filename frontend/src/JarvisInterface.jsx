@@ -239,9 +239,46 @@ export default function JarvisInterface() {
 
   // All device/status data below is populated exclusively by events
   // coming from the connector — nothing here is seeded or guessed.
+  const pickVoice = () => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) return null;
+    return (
+      voices.find((v) => v.lang.includes("GBCWMD")) ||
+      voices.find((v) => v.lang.startsWith("en-GB")) ||
+      voices.find((v) => v.lang === "en-GB") ||
+      voices.find((v) => v.lang.startsWith("en")) ||
+      voices[0]
+    );
+  };
+
+  const speak = useCallback((text) => {
+    if (!("speechSynthesis" in window) || !text) return;
+
+    const doSpeak = () => {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = pickVoice();
+      if (voice) utterance.voice = voice;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    };
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = doSpeak;
+    } else {
+      doSpeak();
+    }
+  }, []);
+
   const handleEvent = useCallback((event) => {
     if (event.type === "assistant.response") {
+      // Voice output is handled server-side via Piper — see runtime/jarvis.server.js.
+      // The Web Speech API speak() call was removed here to avoid two voices
+      // responding at once. speak() is kept unused above in case we want a
+      // browser-only fallback later (e.g. when running against a remote server).
       setMessages((m) => [...m, { id: m.length, from: "jarvis", text: event.text }]);
+      setConversationOpen(true);
     }
     if (event.type === "jarvis.state") {
       setJarvisState(event.state);
@@ -294,10 +331,58 @@ export default function JarvisInterface() {
     setConversationOpen(true);
   };
 
-  const toggleListen = () => {
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+
+  const toggleListen = async () => {
     const next = !listening;
-    setListening(next);
-    connectorRef.current.send({ type: "voice.toggle", listening: next });
+
+    if (next) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStreamRef.current = stream;
+
+        const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+        mediaRecorderRef.current = recorder;
+        const recordedBlobs = [];
+
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            recordedBlobs.push(e.data);
+          }
+        };
+
+        recorder.onstop = async () => {
+          if (recordedBlobs.length > 0) {
+            const fullBlob = new Blob(recordedBlobs, { type: "audio/webm" });
+            const buffer = await fullBlob.arrayBuffer();
+            const base64 = btoa(
+              new Uint8Array(buffer).reduce((str, byte) => str + String.fromCharCode(byte), "")
+            );
+            connectorRef.current.send({ type: "audio.chunk", data: base64 });
+          }
+          connectorRef.current.send({ type: "audio.end" });
+          stream.getTracks().forEach((track) => track.stop());
+        };
+
+        recorder.start();
+        setListening(true);
+        connectorRef.current.send({ type: "voice.toggle", listening: true });
+      } catch (error) {
+        handleEvent({
+          type: "activity.log",
+          message: "Microphone access failed",
+          detail: error.message
+        });
+        setListening(false);
+      }
+    } else {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      setListening(false);
+      connectorRef.current.send({ type: "voice.toggle", listening: false });
+    }
   };
 
   const onlineCount = devices.filter((d) => d.online).length;
