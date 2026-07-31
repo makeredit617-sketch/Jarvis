@@ -12,7 +12,7 @@ const { randomUUID } = require("crypto");
  * per request, so repeated commands stay fast after the first one.
  */
 function createWhisperProvider(options = {}) {
-  const { id, pythonPath = "python3", scriptPath } = options;
+  const { id, pythonPath = "python3", scriptPath, env = {} } = options;
 
   let child = null;
   let ready = false;
@@ -55,7 +55,10 @@ function createWhisperProvider(options = {}) {
 
     initialize() {
       return new Promise((resolve, reject) => {
-        child = spawn(pythonPath, [scriptPath], { stdio: ["pipe", "pipe", "pipe"] });
+        child = spawn(pythonPath, [scriptPath], {
+          stdio: ["pipe", "pipe", "pipe"],
+          env: { ...process.env, ...env }
+        });
 
         child.stdout.on("data", (chunk) => {
           stdoutBuffer += chunk.toString();

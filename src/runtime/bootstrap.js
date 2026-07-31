@@ -13,6 +13,8 @@ const { createCapabilityManager } = require("../capabilities/capability-manager"
 const { createCapabilityRegistry } = require("../capabilities/capability-registry");
 const { createWriteFileTool } = require("../tools/adapters/write-file.tool");
 const { paths: appPaths } = require("../config/paths");
+const { getHardwareProfile } = require("../system-intelligence/hardware-profile");
+const { getRecommendations } = require("../system-intelligence/recommendations");
 
 function bootJarvisRuntime(options = {}) {
   const architectureDocs = loadArchitectureDocs();
@@ -34,6 +36,13 @@ function bootJarvisRuntime(options = {}) {
     registry: capabilityRegistry
   });
   serviceRegistry.register("capabilityManager", capabilityManager);
+
+  const hardwareProfile = getHardwareProfile();
+  const recommendations = getRecommendations(hardwareProfile);
+  serviceRegistry.register("systemIntelligence", {
+    hardwareProfile,
+    recommendations
+  });
 
   const agents = createAgentRegistry({ architectureDocs });
   const orchestrator = createOrchestrator({

@@ -62,10 +62,20 @@ async function main() {
 
   fs.mkdirSync(AUDIO_TMP_DIR, { recursive: true });
 
+  const systemIntelligence = runtime.services.get("systemIntelligence");
+  const recommendedModel = systemIntelligence?.recommendations?.whisperModel;
+  const whisperEnv = {};
+  if (!process.env.WHISPER_MODEL && recommendedModel) {
+    whisperEnv.WHISPER_MODEL = recommendedModel;
+    console.log(`System Intelligence: no WHISPER_MODEL set, using recommended "${recommendedModel}" for this hardware.`);
+    (systemIntelligence.recommendations.notes || []).forEach((note) => console.log(`  - ${note}`));
+  }
+
   const whisperProvider = createWhisperProvider({
     id: "whisper-local",
     pythonPath: process.env.WHISPER_PYTHON || "python3",
-    scriptPath: path.join(__dirname, "..", "python", "transcribe_server.py")
+    scriptPath: path.join(__dirname, "..", "python", "transcribe_server.py"),
+    env: whisperEnv
   });
 
   console.log("Starting Whisper provider (this may take a moment on first run)...");
