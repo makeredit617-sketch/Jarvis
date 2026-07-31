@@ -7,6 +7,7 @@ const { WebSocketServer } = require("ws");
 const { bootJarvisRuntime } = require("../src/runtime/bootstrap");
 const { createWhisperProvider } = require("../src/communication/providers/whisper-provider");
 const { createPiperClient } = require("../src/tts/piper-client");
+const { formatSystemIntelligence } = require("../src/system-intelligence/formatter");
 
 const PORT = process.env.JARVIS_WS_PORT || 8787;
 const AUDIO_TMP_DIR = path.join(__dirname, "..", "workspace", ".audio-tmp");
@@ -67,8 +68,8 @@ async function main() {
   const whisperEnv = {};
   if (!process.env.WHISPER_MODEL && recommendedModel) {
     whisperEnv.WHISPER_MODEL = recommendedModel;
-    console.log(`System Intelligence: no WHISPER_MODEL set, using recommended "${recommendedModel}" for this hardware.`);
-    (systemIntelligence.recommendations.notes || []).forEach((note) => console.log(`  - ${note}`));
+    console.log(formatSystemIntelligence(systemIntelligence));
+    console.log(`Using recommended Whisper model: "${recommendedModel}".`);
   }
 
   const whisperProvider = createWhisperProvider({

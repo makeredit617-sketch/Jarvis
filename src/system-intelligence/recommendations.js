@@ -1,43 +1,44 @@
 "use strict";
 
-function getRecommendations(profile) {
+function getRecommendations(hardware, runtimeProfile) {
   const notes = [];
-  let whisperModel = "small";
-  let maxConcurrentAgents = 3;
-  let piperComfortable = true;
 
-  if (profile.cpuCount <= 2) {
-    whisperModel = "tiny";
-    maxConcurrentAgents = 1;
+  if (runtimeProfile.runtime === "LIGHTWEIGHT") {
     notes.push(
-      `Only ${profile.cpuCount} CPU core(s) detected. Recommending the "tiny" ` +
-      `Whisper model and limiting to 1 agent at a time — this machine doesn't ` +
-      `have headroom for parallel work.`
+      `Only ${hardware.cpuCount} CPU core(s) detected. ` +
+      `Running in LIGHTWEIGHT mode with reduced concurrency.`
     );
-  } else if (profile.cpuCount <= 4) {
-    whisperModel = "base";
-    maxConcurrentAgents = 2;
+  } else if (runtimeProfile.runtime === "BALANCED") {
+    notes.push(
+      "Running in BALANCED mode. Moderate parallelism is recommended."
+    );
+  } else {
+    notes.push(
+      "Running in HIGH_PERFORMANCE mode."
+    );
   }
 
-  if (profile.totalMemGB < 4) {
-    piperComfortable = false;
+  if (hardware.totalMemGB < 4) {
     notes.push(
-      `Total RAM is ${profile.totalMemGB}GB. Piper and Whisper both hold models ` +
-      `in memory for the life of the process — expect this to be a meaningful ` +
-      `share of available RAM. Close unnecessary apps before running JARVIS.`
+      `Total RAM is ${hardware.totalMemGB}GB. Piper and Whisper both hold models ` +
+      `in memory for the life of the process — keep unnecessary applications closed.`
     );
-  } else if (profile.totalMemGB < 8) {
-    notes.push(`${profile.totalMemGB}GB RAM is workable but tight with both voice models loaded.`);
+  } else if (hardware.totalMemGB < 8) {
+    notes.push(
+      `${hardware.totalMemGB}GB RAM is workable but may become tight with multiple AI models.`
+    );
   }
 
-  if (!profile.hasCuda) {
-    notes.push("No CUDA GPU detected — Whisper and any future vision models will run on CPU only.");
+  if (!hardware.hasCuda) {
+    notes.push(
+      "No CUDA GPU detected — AI inference will run on CPU."
+    );
   }
 
   return {
-    whisperModel,
-    maxConcurrentAgents,
-    piperComfortable,
+    whisperModel: runtimeProfile.preferredWhisperModel,
+    maxConcurrentAgents: runtimeProfile.maxConcurrentAgents,
+    piperComfortable: runtimeProfile.persistentVoiceModels,
     notes
   };
 }
