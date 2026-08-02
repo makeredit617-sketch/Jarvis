@@ -1,24 +1,22 @@
 async function collectEvidence(context = {}) {
     return {
-        status: "SUCCESS",
+        status: "FAILED",
         timestamp: new Date().toISOString(),
 
-        command: {
-        stdout: context.stdout ?? "",
-        stderr: context.stderr ?? "",
-        exitCode: context.exitCode ?? null
-    },
+        executionId: context.executionId ?? null,
+        planId: context.executionIntent?.planId ?? null,
 
-        workingDirectory: context.workingDirectory ?? process.cwd(),
+        request: context.plan?.request ?? null,
+
+        errors: context.executionResult?.errors ?? [],
+        changes: context.executionResult?.changes ?? [],
+        commands: context.executionIntent?.commands ?? [],
 
         platform: process.platform,
-
         nodeVersion: process.version,
 
         environment: {},
-
         logs: [],
-
         metadata: {}
     };
 }

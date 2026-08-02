@@ -4,6 +4,7 @@ const { createEngineerAgent } = require("./engineer.agent");
 const { createExecutorAgent } = require("./executor.agent");
 const { createQaAgent } = require("./qa.agent");
 const { createMemoryAgent } = require("./memory.agent");
+const { createDiagnosticAgent } = require("./diagnostic.agent");
 
 function createAgentRegistry(context) {
   const agents = [
@@ -12,7 +13,8 @@ function createAgentRegistry(context) {
     createEngineerAgent(context),
     createExecutorAgent(context),
     createQaAgent(context),
-    createMemoryAgent(context)
+    createMemoryAgent(context),
+    createDiagnosticAgent(context)
   ];
 
   return {
@@ -22,7 +24,8 @@ function createAgentRegistry(context) {
     engineer: agents[2],
     executor: agents[3],
     qa: agents[4],
-    memory: agents[5]
+    memory: agents[5],
+    diagnostic: agents[6]
   };
 }
 

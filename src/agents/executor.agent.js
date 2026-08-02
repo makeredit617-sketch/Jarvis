@@ -14,6 +14,14 @@ function createExecutorAgent() {
             executionIntent: event.payload.executionIntent,
             executionResult
           }));
+
+          if (executionResult.status === "FAILED") {
+            await eventBus.publish(event.context.createEvent("ExecutionFailed", this.name, {
+              plan: event.payload.plan,
+              executionIntent: event.payload.executionIntent,
+              executionResult
+            }));
+          }
         })
       ];
     },

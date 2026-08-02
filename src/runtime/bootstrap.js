@@ -14,6 +14,8 @@ const { createCapabilityRegistry } = require("../capabilities/capability-registr
 const { createWriteFileTool } = require("../tools/adapters/write-file.tool");
 const { paths: appPaths } = require("../config/paths");
 const { createSystemIntelligence } = require("../system-intelligence");
+const { createFailureMemory } = require("../failure-memory/failure-memory");
+const { createFailureIntelligence } = require("../failure-intelligence");
 
 function bootJarvisRuntime(options = {}) {
   const architectureDocs = loadArchitectureDocs();
@@ -21,6 +23,14 @@ function bootJarvisRuntime(options = {}) {
   const eventBus = createEventBus(options.events);
   const memoryStore = createMemoryStore(options.memory);
   const serviceRegistry = createServiceRegistry();
+
+  serviceRegistry.register("memoryStore", memoryStore);
+
+  const failureMemory = createFailureMemory(memoryStore);
+  serviceRegistry.register("failureMemory", failureMemory);
+
+  const failureIntelligence = createFailureIntelligence(failureMemory);
+  serviceRegistry.register("failureIntelligence", failureIntelligence);
 
   const emergencyControl = createEmergencyControl();
   serviceRegistry.register("emergencyControl", emergencyControl);
