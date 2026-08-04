@@ -48,8 +48,9 @@ function createExecutorAgent() {
         }
       }
       const allWritesSucceeded = changeResults.every(result => result.success);
+      const hasErrors = errors.length > 0;
       const result = {
-        status: allWritesSucceeded ? (intent.status || "SUCCESS") : "FAILED",
+        status: (allWritesSucceeded && !hasErrors) ? (intent.status || "SUCCESS") : "FAILED",
         planId: intent.planId,
         changes: changeResults,
         commands: [],

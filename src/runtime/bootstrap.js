@@ -24,7 +24,6 @@ function bootJarvisRuntime(options = {}) {
   const memoryStore = createMemoryStore(options.memory);
   const serviceRegistry = createServiceRegistry();
 
-  serviceRegistry.register("memoryStore", memoryStore);
 
   const failureMemory = createFailureMemory(memoryStore);
   serviceRegistry.register("failureMemory", failureMemory);
