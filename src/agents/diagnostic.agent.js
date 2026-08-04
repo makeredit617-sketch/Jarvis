@@ -1,14 +1,20 @@
 const { collectEvidence } = require("../diagnostics/collector");
 const { buildDiagnosticPrompt } = require("../diagnostics/prompts");
 const { validateDiagnosticReport } = require("../diagnostics/validator");
+const { createFailureFingerprint } = require("../failure-memory/fingerprint");
+const { createRetryEngine } = require("../retry-engine");
 
 function createDiagnosticAgent() {
+  const retryEngine = createRetryEngine();
+  const attemptsByFingerprint = new Map();
+
   return {
     name: "diagnostic",
 
     register({ eventBus, serviceRegistry }) {
       this.ai = serviceRegistry.get("ai");
       this.failureMemory = serviceRegistry.get("failureMemory");
+      this.runtime = serviceRegistry.get("runtime");
 
       return [
         eventBus.subscribe("ExecutionFailed", async event => {
@@ -47,6 +53,38 @@ function createDiagnosticAgent() {
       }
 
       console.log(`[Diagnostic] ${report.category}: ${report.rootCause} (confidence: ${report.confidence})`);
+
+      await this.maybeRetry(report, evidence);
+    },
+
+    async maybeRetry(report, evidence) {
+      if (!this.runtime || !evidence.request) {
+        return;
+      }
+
+      const fingerprint = createFailureFingerprint(report);
+      const attemptNumber = attemptsByFingerprint.get(fingerprint) || 0;
+
+      const decision = retryEngine.decideRetry({
+        category: report.category,
+        attemptNumber
+      });
+
+      if (!decision.shouldRetry) {
+        console.log(`[Retry] Not retrying: ${decision.reason}`);
+        return;
+      }
+
+      attemptsByFingerprint.set(fingerprint, attemptNumber + 1);
+      console.log(`[Retry] ${decision.reason} Waiting ${decision.delayMs}ms before retry.`);
+
+      await new Promise(resolve => setTimeout(resolve, decision.delayMs));
+
+      console.log(`[Retry] Re-attempting request: "${evidence.request}"`);
+      await this.runtime.handleRequest({
+        request: evidence.request,
+        source: "retry-engine"
+      });
     }
   };
 }
