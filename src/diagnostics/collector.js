@@ -10,6 +10,7 @@ async function collectEvidence(context = {}) {
 
         errors: context.executionResult?.errors ?? [],
         changes: context.executionResult?.changes ?? [],
+        attemptedChanges: context.executionIntent?.changes ?? [],
         commands: context.executionIntent?.commands ?? [],
 
         platform: process.platform,

@@ -3,10 +3,12 @@ const { buildDiagnosticPrompt } = require("../diagnostics/prompts");
 const { validateDiagnosticReport } = require("../diagnostics/validator");
 const { createFailureFingerprint } = require("../failure-memory/fingerprint");
 const { createRetryEngine } = require("../retry-engine");
+const { createSelfDebugger } = require("../self-debugger");
 
 function createDiagnosticAgent() {
   const retryEngine = createRetryEngine();
   const attemptsByFingerprint = new Map();
+  let selfDebugger = null;
 
   return {
     name: "diagnostic",
@@ -15,6 +17,7 @@ function createDiagnosticAgent() {
       this.ai = serviceRegistry.get("ai");
       this.failureMemory = serviceRegistry.get("failureMemory");
       this.runtime = serviceRegistry.get("runtime");
+      selfDebugger = createSelfDebugger({ toolRegistry: serviceRegistry.get("toolRegistry") });
 
       return [
         eventBus.subscribe("ExecutionFailed", async event => {
@@ -53,6 +56,16 @@ function createDiagnosticAgent() {
       }
 
       console.log(`[Diagnostic] ${report.category}: ${report.rootCause} (confidence: ${report.confidence})`);
+
+      const fixResult = await selfDebugger.attemptFix(report, evidence);
+      if (fixResult.attempted) {
+        console.log(`[Self-Debugger] Strategy "${fixResult.strategy}": ${fixResult.succeeded ? "SUCCEEDED" : "FAILED"}`);
+        if (fixResult.succeeded) {
+          return;
+        }
+      } else {
+        console.log(`[Self-Debugger] Not attempted: ${fixResult.reason}`);
+      }
 
       await this.maybeRetry(report, evidence);
     },
