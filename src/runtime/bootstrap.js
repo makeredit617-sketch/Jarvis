@@ -16,6 +16,8 @@ const { paths: appPaths } = require("../config/paths");
 const { createSystemIntelligence } = require("../system-intelligence");
 const { createFailureMemory } = require("../failure-memory/failure-memory");
 const { createFailureIntelligence } = require("../failure-intelligence");
+const { createStrategyLearning } = require("../strategy-learning");
+const { createWorkflowOptimizer } = require("../workflow-optimizer");
 
 function bootJarvisRuntime(options = {}) {
   const architectureDocs = loadArchitectureDocs();
@@ -30,6 +32,12 @@ function bootJarvisRuntime(options = {}) {
 
   const failureIntelligence = createFailureIntelligence(failureMemory);
   serviceRegistry.register("failureIntelligence", failureIntelligence);
+
+  const strategyLearning = createStrategyLearning(failureMemory);
+  serviceRegistry.register("strategyLearning", strategyLearning);
+
+  const workflowOptimizer = createWorkflowOptimizer({ failureIntelligence, strategyLearning });
+  serviceRegistry.register("workflowOptimizer", workflowOptimizer);
 
   const emergencyControl = createEmergencyControl();
   serviceRegistry.register("emergencyControl", emergencyControl);
