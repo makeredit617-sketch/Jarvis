@@ -81,10 +81,20 @@ function createDiagnosticAgent() {
       await new Promise(resolve => setTimeout(resolve, decision.delayMs));
 
       console.log(`[Retry] Re-attempting request: "${evidence.request}"`);
-      await this.runtime.handleRequest({
+      const retryResult = await this.runtime.handleRequest({
         request: evidence.request,
         source: "retry-engine"
       });
+
+      const succeeded = retryResult.executionResult?.status === "SUCCESS";
+      console.log(`[Retry] Outcome: ${succeeded ? "SUCCEEDED" : "FAILED"}`);
+
+      if (this.failureMemory) {
+        this.failureMemory.recordRetryOutcome(fingerprint, {
+          succeeded,
+          attemptNumber: attemptNumber + 1
+        });
+      }
     }
   };
 }

@@ -51,6 +51,26 @@ function createFailureMemory(memoryStore) {
       );
 
       return updated;
+    },
+
+    recordRetryOutcome(fingerprint, { succeeded, attemptNumber }) {
+      const record = {
+        id: `retry-outcome-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        fingerprint,
+        succeeded,
+        attemptNumber
+      };
+
+      memoryStore.append(record);
+
+      return record;
+    },
+
+    listRetryOutcomes(fingerprint) {
+      return memoryStore.readAll().filter(
+        record => record.id && record.id.startsWith("retry-outcome-") && record.fingerprint === fingerprint
+      );
     }
   };
 }
