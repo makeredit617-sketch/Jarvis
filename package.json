@@ -23,6 +23,7 @@
     "lucide-react": "^1.25.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "three": "^0.185.1",
     "ws": "^8.21.1"
   },
   "devDependencies": {

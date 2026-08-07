@@ -35,10 +35,16 @@ function getRecommendations(hardware, runtimeProfile) {
     );
   }
 
+  const uiTier = runtimeProfile.runtime === "LIGHTWEIGHT" ? "2D" : "3D";
+  if (uiTier === "2D") {
+    notes.push("Using the lightweight 2D interface — 3D rendering would compete with Whisper/Piper for limited CPU/RAM.");
+  }
+
   return {
     whisperModel: runtimeProfile.preferredWhisperModel,
     maxConcurrentAgents: runtimeProfile.maxConcurrentAgents,
     piperComfortable: runtimeProfile.persistentVoiceModels,
+    uiTier,
     notes
   };
 }

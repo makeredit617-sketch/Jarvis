@@ -112,7 +112,12 @@ async function main() {
   console.log(`JARVIS WebSocket server listening on ws://localhost:${PORT}`);
 
   wss.on("connection", (ws) => {
-    ws.send(JSON.stringify({ type: "connection.state", connected: true }));
+    const systemIntelligence = runtime.services.get("systemIntelligence");
+    ws.send(JSON.stringify({
+      type: "connection.state",
+      connected: true,
+      uiTier: systemIntelligence?.recommendations?.uiTier || "2D"
+    }));
 
     ws.on("message", async (raw) => {
       let event;

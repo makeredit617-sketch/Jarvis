@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Mic, Send, X, MessageSquare, Cpu, Wifi, HardDrive, Laptop, Smartphone, ChevronRight } from "lucide-react";
+import JarvisVisualEngine3D from "./JarvisVisualEngine3D.jsx";
 
 /* ============================================================
    JARVIS RUNTIME CONNECTOR
@@ -231,6 +232,7 @@ export default function JarvisInterface() {
     { id: 0, time: timeNow(), message: "Interface initialized" },
   ]);
   const [conversationOpen, setConversationOpen] = useState(false);
+  const [uiTier, setUiTier] = useState("2D");
   const [listening, setListening] = useState(false);
 
   const connectorRef = useRef(null);
@@ -285,6 +287,9 @@ export default function JarvisInterface() {
     }
     if (event.type === "connection.state") {
       setConnected(event.connected);
+      if (event.uiTier) {
+        setUiTier(event.uiTier);
+      }
     }
     if (event.type === "activity.log") {
       setActivity((a) => [
@@ -491,7 +496,9 @@ export default function JarvisInterface() {
 
         {/* Center */}
         <div style={styles.center}>
-          <JarvisVisualEngine state={jarvisState} />
+          {uiTier === "3D"
+            ? <JarvisVisualEngine3D state={jarvisState} />
+            : <JarvisVisualEngine state={jarvisState} />}
 
           <div style={styles.quickBar}>
             <button
