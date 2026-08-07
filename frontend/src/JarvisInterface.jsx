@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import { Mic, Send, X, MessageSquare, Cpu, Wifi, HardDrive, Laptop, Smartphone, ChevronRight } from "lucide-react";
-import JarvisVisualEngine3D from "./JarvisVisualEngine3D.jsx";
+
+// Lazy-loaded so machines running the 2D interface never download the
+// Three.js bundle at all — only fetched when uiTier is actually "3D".
+const JarvisVisualEngine3D = lazy(() => import("./JarvisVisualEngine3D.jsx"));
 
 /* ============================================================
    JARVIS RUNTIME CONNECTOR
@@ -497,7 +500,11 @@ export default function JarvisInterface() {
         {/* Center */}
         <div style={styles.center}>
           {uiTier === "3D"
-            ? <JarvisVisualEngine3D state={jarvisState} />
+            ? (
+              <Suspense fallback={<JarvisVisualEngine state={jarvisState} />}>
+                <JarvisVisualEngine3D state={jarvisState} />
+              </Suspense>
+            )
             : <JarvisVisualEngine state={jarvisState} />}
 
           <div style={styles.quickBar}>
